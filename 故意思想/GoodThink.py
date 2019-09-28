@@ -7,6 +7,8 @@ Created on Wed Sep 25 14:06:14 2019
 
 import tkinter as tk
 import random as rd
+import sqlite3
+import os
 
 
 win = tk.Tk()
@@ -14,16 +16,16 @@ win.geometry('500x500')
 win.title('Have A Good Think')
 
 
-with open('mean.txt') as f:
-    data = f.readlines()
+if os.path.exists('sentences.db'):
+    conn = sqlite3.connect('sentences.db')
+    cursor = conn.cursor()
+    data = list(cursor.execute('select sentence from record'))
+    #print(data)
     datas = []
-    for i in data:
-        if i != '\n':
-            a = i.strip()
-            datas.append(a)
-            
-    
-    #print(datas)
+    for i in range(len(data)):
+        datas.append(data[i][0])
+    print(datas)
+    conn.close()
 
 
 def nlcontrol():
@@ -31,15 +33,18 @@ def nlcontrol():
     
     string = ''
     
-    a = rd.randrange(0, len(datas))
-    
-    clist = [',',':','。',';','，','？']
-    
-    for i in range(len(datas[a])):
-        if datas[a][i] in clist:
-            string += '\n'
-        else:
-            string += datas[a][i]
+    if not os.path.exists('sentences.db'):
+        string = "you don't have the database"
+    else:
+        a = rd.randrange(0, len(datas))
+        
+        clist = [',',':','。',';','，','？']
+        
+        for i in range(len(datas[a])):
+            if datas[a][i] in clist:
+                string += '\n'
+            else:
+                string += datas[a][i]
     #print(string)
 
 
